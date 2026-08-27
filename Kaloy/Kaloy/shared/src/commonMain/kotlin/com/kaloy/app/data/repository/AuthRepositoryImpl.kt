@@ -5,33 +5,40 @@ import com.kaloy.app.data.dto.*
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.request.*
+import io.ktor.client.statement.*
 import io.ktor.http.*
 import kotlinx.serialization.json.Json
 
 class AuthRepositoryImpl(private val client: HttpClient) : AuthRepository {
 
+    private suspend inline fun <reified T> HttpResponse.decodeData(): T {
+        val rest = body<RestResponse>()
+        if (status.value >= 400) {
+            throw Exception(rest.message.ifBlank { "Erreur ${status.value}" })
+        }
+        val data = rest.data ?: throw Exception("Réponse inattendue du serveur")
+        return Json.decodeFromJsonElement(kotlinx.serialization.serializer<T>(), data)
+    }
+
     override suspend fun registerClient(request: RegisterClientRequest): RegisterResponse {
-        val rest = client.post("$BASE_URL/auth/register/client") {
+        return client.post("$BASE_URL/auth/register/client") {
             contentType(ContentType.Application.Json)
             setBody(request)
-        }.body<RestResponse>()
-        return Json.decodeFromJsonElement(RegisterResponse.serializer(), rest.data!!)
+        }.decodeData()
     }
 
     override suspend fun registerArtist(request: RegisterArtistRequest): RegisterResponse {
-        val rest = client.post("$BASE_URL/auth/register/artist") {
+        return client.post("$BASE_URL/auth/register/artist") {
             contentType(ContentType.Application.Json)
             setBody(request)
-        }.body<RestResponse>()
-        return Json.decodeFromJsonElement(RegisterResponse.serializer(), rest.data!!)
+        }.decodeData()
     }
 
     override suspend fun verifyOtp(request: OtpVerifyRequest): AuthResponse {
-        val rest = client.post("$BASE_URL/auth/verify-otp") {
+        return client.post("$BASE_URL/auth/verify-otp") {
             contentType(ContentType.Application.Json)
             setBody(request)
-        }.body<RestResponse>()
-        return Json.decodeFromJsonElement(AuthResponse.serializer(), rest.data!!)
+        }.decodeData()
     }
 
     override suspend fun resendOtp(request: ResendOtpRequest): String {

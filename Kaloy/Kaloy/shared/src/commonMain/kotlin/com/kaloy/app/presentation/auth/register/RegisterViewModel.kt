@@ -1,33 +1,17 @@
 package com.kaloy.app.presentation.auth.register
 
-import cafe.adriel.voyager.core.model.ScreenModel
-import cafe.adriel.voyager.core.model.screenModelScope
 import com.kaloy.app.data.dto.RegisterArtistRequest
 import com.kaloy.app.data.dto.RegisterClientRequest
 import com.kaloy.app.data.dto.RegisterResponse
 import com.kaloy.app.data.repository.AuthRepository
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-
-data class RegisterFormState(
-    val email: String = "",
-    val password: String = "",
-    val phone: String = "",
-    val otpChannel: String = "EMAIL",
-    val accountType: String = "CLIENT",
-    // Client fields
-    val firstName: String = "",
-    val lastName: String = "",
-    val username: String = "",
-    // Artist fields
-    val artistType: String = "SOLO",
-    val stageName: String = "",
-    val activeSinceYear: String = "",
-    val bio: String = "",
-    val photoUrl: String = ""
-)
 
 sealed class RegisterUiState {
     object Idle : RegisterUiState()
@@ -36,36 +20,38 @@ sealed class RegisterUiState {
     data class Error(val message: String) : RegisterUiState()
 }
 
-class RegisterViewModel(private val repository: AuthRepository) : ScreenModel {
+class RegisterViewModel(private val repository: AuthRepository) {
 
-    private val _formState = MutableStateFlow(RegisterFormState())
-    val formState: StateFlow<RegisterFormState> = _formState.asStateFlow()
+    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
 
     private val _uiState = MutableStateFlow<RegisterUiState>(RegisterUiState.Idle)
     val uiState: StateFlow<RegisterUiState> = _uiState.asStateFlow()
-
-    fun updateForm(update: RegisterFormState.() -> RegisterFormState) {
-        _formState.value = _formState.value.update()
-    }
 
     fun resetUiState() {
         _uiState.value = RegisterUiState.Idle
     }
 
-    fun registerClient() {
-        val form = _formState.value
-        screenModelScope.launch {
+    fun registerClient(
+        email: String,
+        password: String,
+        phone: String?,
+        otpChannel: String,
+        firstName: String?,
+        lastName: String?,
+        username: String?
+    ) {
+        scope.launch {
             _uiState.value = RegisterUiState.Loading
             try {
                 val response = repository.registerClient(
                     RegisterClientRequest(
-                        email = form.email,
-                        password = form.password,
-                        phone = form.phone.ifBlank { null },
-                        firstName = form.firstName.ifBlank { null },
-                        lastName = form.lastName.ifBlank { null },
-                        username = form.username.ifBlank { null },
-                        otpChannel = form.otpChannel
+                        email = email,
+                        password = password,
+                        phone = phone?.ifBlank { null },
+                        firstName = firstName?.ifBlank { null },
+                        lastName = lastName?.ifBlank { null },
+                        username = username?.ifBlank { null },
+                        otpChannel = otpChannel
                     )
                 )
                 _uiState.value = RegisterUiState.Success(response)
@@ -75,22 +61,31 @@ class RegisterViewModel(private val repository: AuthRepository) : ScreenModel {
         }
     }
 
-    fun registerArtist() {
-        val form = _formState.value
-        screenModelScope.launch {
+    fun registerArtist(
+        email: String,
+        password: String,
+        phone: String?,
+        otpChannel: String,
+        artistType: String,
+        stageName: String,
+        activeSinceYear: String,
+        bio: String,
+        photoUrl: String
+    ) {
+        scope.launch {
             _uiState.value = RegisterUiState.Loading
             try {
                 val response = repository.registerArtist(
                     RegisterArtistRequest(
-                        email = form.email,
-                        password = form.password,
-                        artistType = form.artistType,
-                        stageName = form.stageName,
-                        phone = form.phone.ifBlank { null },
-                        activeSinceYear = form.activeSinceYear.toIntOrNull(),
-                        bio = form.bio.ifBlank { null },
-                        photoUrl = form.photoUrl.ifBlank { null },
-                        otpChannel = form.otpChannel
+                        email = email,
+                        password = password,
+                        artistType = artistType,
+                        stageName = stageName,
+                        phone = phone?.ifBlank { null },
+                        activeSinceYear = activeSinceYear.toIntOrNull(),
+                        bio = bio.ifBlank { null },
+                        photoUrl = photoUrl.ifBlank { null },
+                        otpChannel = otpChannel
                     )
                 )
                 _uiState.value = RegisterUiState.Success(response)
@@ -99,4 +94,6 @@ class RegisterViewModel(private val repository: AuthRepository) : ScreenModel {
             }
         }
     }
+
+    fun dispose() = scope.cancel()
 }

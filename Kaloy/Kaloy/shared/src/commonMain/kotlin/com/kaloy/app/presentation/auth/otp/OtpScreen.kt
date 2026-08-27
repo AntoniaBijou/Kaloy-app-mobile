@@ -1,5 +1,6 @@
 package com.kaloy.app.presentation.auth.otp
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.BasicTextField
@@ -10,6 +11,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
@@ -44,11 +46,16 @@ data class OtpScreen(
             if (uiState is OtpUiState.Resent) {
                 viewModel.resetUiState()
             }
+            if (uiState is OtpUiState.Success) {
+                val username = email.substringBefore("@")
+                navigator.push(com.kaloy.app.presentation.home.HomeScreen(username = username))
+            }
         }
 
         Column(
             modifier = Modifier
                 .fillMaxSize()
+                .background(Color.White)
                 .padding(horizontal = 24.dp, vertical = 32.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(16.dp)

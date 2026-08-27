@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <network-security-config>
-    <!-- Autorise HTTP vers le backend local (émulateur : 10.0.2.2, device réel : IP de la machine) -->
+    <!-- Autorise HTTP (cleartext) vers toutes les adresses locales en développement -->
     <domain-config cleartextTrafficPermitted="true">
-        <domain includeSubdomains="false">10.0.2.2</domain>
+        <domain includeSubdomains="false">172.16.0.25</domain>
         <domain includeSubdomains="false">localhost</domain>
+        <!-- Remplacer par l'IP réelle de votre machine pour tests sur vrai téléphone -->
+        <!-- Exemple : <domain includeSubdomains="false">192.168.1.42</domain> -->
     </domain-config>
 </network-security-config>

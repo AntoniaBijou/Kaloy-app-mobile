@@ -9,10 +9,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.core.screen.Screen
-import cafe.adriel.voyager.koin.koinScreenModel
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
+import com.kaloy.app.data.repository.AuthRepository
 import com.kaloy.app.presentation.auth.otp.OtpScreen
+import org.koin.compose.koinInject
 
 data class RegisterArtistDetailsScreen(
     val email: String,
@@ -25,8 +26,13 @@ data class RegisterArtistDetailsScreen(
     @Composable
     override fun Content() {
         val navigator = LocalNavigator.currentOrThrow
-        val viewModel = koinScreenModel<RegisterViewModel>()
+        val repository = koinInject<AuthRepository>()
+        val viewModel = remember { RegisterViewModel(repository) }
         val uiState by viewModel.uiState.collectAsState()
+
+        DisposableEffect(viewModel) {
+            onDispose { viewModel.dispose() }
+        }
 
         var stageName by remember { mutableStateOf("") }
         var stageNameError by remember { mutableStateOf("") }
@@ -99,20 +105,17 @@ data class RegisterArtistDetailsScreen(
                         stageNameError = "Le nom de scène est requis"
                         return@Button
                     }
-                    viewModel.updateForm {
-                        copy(
-                            email = email,
-                            phone = phone,
-                            password = password,
-                            otpChannel = otpChannel,
-                            artistType = artistType,
-                            stageName = stageName,
-                            activeSinceYear = activeSinceYear,
-                            bio = bio,
-                            photoUrl = photoUrl
-                        )
-                    }
-                    viewModel.registerArtist()
+                    viewModel.registerArtist(
+                        email = email,
+                        password = password,
+                        phone = phone.ifBlank { null },
+                        otpChannel = otpChannel,
+                        artistType = artistType,
+                        stageName = stageName,
+                        activeSinceYear = activeSinceYear,
+                        bio = bio,
+                        photoUrl = photoUrl
+                    )
                 },
                 enabled = uiState !is RegisterUiState.Loading,
                 modifier = Modifier.fillMaxWidth()

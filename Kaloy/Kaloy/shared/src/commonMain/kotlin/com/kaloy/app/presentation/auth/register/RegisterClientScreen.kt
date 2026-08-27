@@ -9,10 +9,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.core.screen.Screen
-import cafe.adriel.voyager.koin.koinScreenModel
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
+import com.kaloy.app.data.repository.AuthRepository
 import com.kaloy.app.presentation.auth.otp.OtpScreen
+import org.koin.compose.koinInject
 
 data class RegisterClientScreen(
     val email: String,
@@ -24,8 +25,13 @@ data class RegisterClientScreen(
     @Composable
     override fun Content() {
         val navigator = LocalNavigator.currentOrThrow
-        val viewModel = koinScreenModel<RegisterViewModel>()
+        val repository = koinInject<AuthRepository>()
+        val viewModel = remember { RegisterViewModel(repository) }
         val uiState by viewModel.uiState.collectAsState()
+
+        DisposableEffect(viewModel) {
+            onDispose { viewModel.dispose() }
+        }
 
         var firstName by remember { mutableStateOf("") }
         var lastName by remember { mutableStateOf("") }
@@ -88,27 +94,21 @@ data class RegisterClientScreen(
 
             Button(
                 onClick = {
-                    viewModel.updateForm {
-                        copy(
-                            email = email,
-                            phone = phone,
-                            password = password,
-                            otpChannel = otpChannel,
-                            firstName = firstName,
-                            lastName = lastName,
-                            username = username
-                        )
-                    }
-                    viewModel.registerClient()
+                    viewModel.registerClient(
+                        email = email,
+                        password = password,
+                        phone = phone.ifBlank { null },
+                        otpChannel = otpChannel,
+                        firstName = firstName.ifBlank { null },
+                        lastName = lastName.ifBlank { null },
+                        username = username.ifBlank { null }
+                    )
                 },
                 enabled = uiState !is RegisterUiState.Loading,
                 modifier = Modifier.fillMaxWidth()
             ) {
                 if (uiState is RegisterUiState.Loading) {
-                    CircularProgressIndicator(
-                        modifier = Modifier.size(20.dp),
-                        strokeWidth = 2.dp
-                    )
+                    CircularProgressIndicator(modifier = Modifier.size(20.dp), strokeWidth = 2.dp)
                 } else {
                     Text("Créer mon compte")
                 }
