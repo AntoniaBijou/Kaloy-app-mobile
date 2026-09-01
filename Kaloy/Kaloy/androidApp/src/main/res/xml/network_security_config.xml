@@ -2,7 +2,7 @@
 <network-security-config>
     <!-- Autorise HTTP (cleartext) vers toutes les adresses locales en développement -->
     <domain-config cleartextTrafficPermitted="true">
-        <domain includeSubdomains="false">172.16.0.25</domain>
+        <domain includeSubdomains="false">192.168.1.191</domain>
         <domain includeSubdomains="false">localhost</domain>
         <!-- Remplacer par l'IP réelle de votre machine pour tests sur vrai téléphone -->
         <!-- Exemple : <domain includeSubdomains="false">192.168.1.42</domain> -->

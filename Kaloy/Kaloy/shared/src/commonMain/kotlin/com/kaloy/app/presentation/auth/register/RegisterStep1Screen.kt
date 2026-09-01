@@ -169,44 +169,6 @@ class RegisterStep1Screen : Screen {
                             )
                             Text("Artiste", color = Color(0xFF111827))
                         }
-
-                        HorizontalDivider(color = Color(0xFFD1D5DB))
-
-                        Text(
-                            text = "Canal de vérification",
-                            style = MaterialTheme.typography.labelLarge,
-                            color = Color(0xFF111827),
-                            fontWeight = FontWeight.SemiBold
-                        )
-
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            RadioButton(
-                                selected = otpChannel == "EMAIL",
-                                onClick = { otpChannel = "EMAIL" },
-                                colors = RadioButtonDefaults.colors(
-                                    selectedColor = Color(0xFF8B5CF6),
-                                    unselectedColor = Color(0xFF6B7280)
-                                )
-                            )
-                            Text("Email", color = Color(0xFF111827), modifier = Modifier.padding(end = 16.dp))
-                            RadioButton(
-                                selected = otpChannel == "SMS",
-                                onClick = { otpChannel = "SMS" },
-                                colors = RadioButtonDefaults.colors(
-                                    selectedColor = Color(0xFF8B5CF6),
-                                    unselectedColor = Color(0xFF6B7280)
-                                )
-                            )
-                            Text("SMS", color = Color(0xFF111827))
-                        }
-
-                        if (otpChannel == "SMS" && phone.isBlank()) {
-                            Text(
-                                text = "Un numéro de téléphone est requis pour recevoir le code OTP par SMS.",
-                                color = Color(0xFFB91C1C),
-                                style = MaterialTheme.typography.bodySmall
-                            )
-                        }
                     }
                 }
 

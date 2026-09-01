@@ -19,6 +19,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -28,15 +29,15 @@ import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
+import com.kaloy.app.presentation.auth.login.LoginScreen
 import com.kaloy.app.presentation.auth.register.RegisterStep1Screen
-import com.kaloy.app.presentation.home.HomeScreen
+import org.koin.compose.koinInject
 
 class WelcomeScreen : Screen {
 
     @Composable
     override fun Content() {
         val navigator = LocalNavigator.currentOrThrow
-
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -101,7 +102,7 @@ class WelcomeScreen : Screen {
                         }
 
                         OutlinedButton(
-                            onClick = { navigator.push(RegisterStep1Screen()) },
+                            onClick = { navigator.push(LoginScreen()) },
                             modifier = Modifier.fillMaxWidth(),
                             shape = RoundedCornerShape(18.dp)
                         ) {
@@ -127,7 +128,7 @@ class WelcomeScreen : Screen {
                             modifier = Modifier
                                 .padding(top = 4.dp)
                                 .clickable {
-                                    navigator.push(HomeScreen(username = "Visiteur"))
+                                    navigator.push(com.kaloy.app.presentation.home.HomeScreen(username = "Visiteur", isVisitor = true))
                                 }
                         )
                     }

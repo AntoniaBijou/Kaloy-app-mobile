@@ -1,5 +1,6 @@
 package com.kaloy.app.presentation.auth.register
 
+import com.kaloy.app.core.error.UserErrorMessages
 import com.kaloy.app.data.dto.RegisterArtistRequest
 import com.kaloy.app.data.dto.RegisterClientRequest
 import com.kaloy.app.data.dto.RegisterResponse
@@ -56,7 +57,7 @@ class RegisterViewModel(private val repository: AuthRepository) {
                 )
                 _uiState.value = RegisterUiState.Success(response)
             } catch (e: Exception) {
-                _uiState.value = RegisterUiState.Error(e.message ?: "Erreur inconnue")
+                _uiState.value = RegisterUiState.Error(UserErrorMessages.fromThrowable(e))
             }
         }
     }
@@ -90,7 +91,7 @@ class RegisterViewModel(private val repository: AuthRepository) {
                 )
                 _uiState.value = RegisterUiState.Success(response)
             } catch (e: Exception) {
-                _uiState.value = RegisterUiState.Error(e.message ?: "Erreur inconnue")
+                _uiState.value = RegisterUiState.Error(UserErrorMessages.fromThrowable(e))
             }
         }
     }

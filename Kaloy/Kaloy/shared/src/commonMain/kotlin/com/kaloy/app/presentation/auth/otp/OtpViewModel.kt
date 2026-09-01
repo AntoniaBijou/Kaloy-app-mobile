@@ -1,5 +1,6 @@
 package com.kaloy.app.presentation.auth.otp
 
+import com.kaloy.app.core.error.UserErrorMessages
 import com.kaloy.app.data.dto.AuthResponse
 import com.kaloy.app.data.dto.OtpVerifyRequest
 import com.kaloy.app.data.dto.ResendOtpRequest
@@ -37,7 +38,7 @@ class OtpViewModel(
                 val response = repository.verifyOtp(OtpVerifyRequest(userId = userId, code = code))
                 _uiState.value = OtpUiState.Success(response)
             } catch (e: Exception) {
-                _uiState.value = OtpUiState.Error(e.message ?: "Code invalide ou expiré")
+                _uiState.value = OtpUiState.Error(UserErrorMessages.fromThrowable(e))
             }
         }
     }
@@ -49,7 +50,7 @@ class OtpViewModel(
                 repository.resendOtp(ResendOtpRequest(userId = userId))
                 _uiState.value = OtpUiState.Resent
             } catch (e: Exception) {
-                _uiState.value = OtpUiState.Error(e.message ?: "Impossible de renvoyer le code")
+                _uiState.value = OtpUiState.Error(UserErrorMessages.fromThrowable(e))
             }
         }
     }

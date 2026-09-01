@@ -1,5 +1,7 @@
 package com.kaloy.app.data.repository
 
+import com.kaloy.app.core.error.UserErrorMessages
+import com.kaloy.app.core.session.AuthSessionManager
 import com.kaloy.app.core.network.BASE_URL
 import com.kaloy.app.data.dto.*
 import io.ktor.client.*
@@ -9,15 +11,40 @@ import io.ktor.client.statement.*
 import io.ktor.http.*
 import kotlinx.serialization.json.Json
 
-class AuthRepositoryImpl(private val client: HttpClient) : AuthRepository {
+class AuthRepositoryImpl(
+    private val client: HttpClient,
+    private val sessionManager: AuthSessionManager
+) : AuthRepository {
 
     private suspend inline fun <reified T> HttpResponse.decodeData(): T {
         val rest = body<RestResponse>()
-        if (status.value >= 400) {
-            throw Exception(rest.message.ifBlank { "Erreur ${status.value}" })
+        if (status.value == 401) {
+            sessionManager.clear()
         }
-        val data = rest.data ?: throw Exception("Réponse inattendue du serveur")
+        if (status.value >= 400) {
+            throw Exception(UserErrorMessages.fromRawMessage(rest.message))
+        }
+        val data = rest.data ?: throw Exception("Une erreur est survenue. Veuillez réessayer.")
         return Json.decodeFromJsonElement(kotlinx.serialization.serializer<T>(), data)
+    }
+
+    override suspend fun login(request: LoginRequest): AuthResponse {
+        val response = client.post("$BASE_URL/auth/login") {
+            contentType(ContentType.Application.Json)
+            setBody(request)
+        }
+
+        val rest = response.body<RestResponse>()
+        if (response.status.value == 401) {
+            sessionManager.clear()
+            throw Exception(UserErrorMessages.fromRawMessage(rest.message))
+        }
+        if (response.status.value >= 400) {
+            throw Exception(UserErrorMessages.fromRawMessage(rest.message))
+        }
+
+        val data = rest.data ?: throw Exception("Une erreur est survenue. Veuillez réessayer.")
+        return Json.decodeFromJsonElement(kotlinx.serialization.serializer<AuthResponse>(), data)
     }
 
     override suspend fun registerClient(request: RegisterClientRequest): RegisterResponse {

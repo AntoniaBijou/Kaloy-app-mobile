@@ -13,6 +13,7 @@ import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import com.kaloy.app.data.repository.AuthRepository
 import com.kaloy.app.presentation.auth.otp.OtpScreen
+import com.kaloy.app.presentation.common.rememberSingleImagePicker
 import org.koin.compose.koinInject
 
 data class RegisterArtistDetailsScreen(
@@ -39,6 +40,9 @@ data class RegisterArtistDetailsScreen(
         var activeSinceYear by remember { mutableStateOf("") }
         var bio by remember { mutableStateOf("") }
         var photoUrl by remember { mutableStateOf("") }
+        val pickProfilePhoto = rememberSingleImagePicker { uri ->
+            photoUrl = uri.orEmpty()
+        }
 
         LaunchedEffect(uiState) {
             if (uiState is RegisterUiState.Success) {
@@ -82,12 +86,20 @@ data class RegisterArtistDetailsScreen(
                 minLines = 3,
                 modifier = Modifier.fillMaxWidth()
             )
-            OutlinedTextField(
-                value = photoUrl,
-                onValueChange = { photoUrl = it },
-                label = { Text("URL photo de profil") },
+            Button(
+                onClick = { pickProfilePhoto() },
                 modifier = Modifier.fillMaxWidth()
-            )
+            ) {
+                Text(if (photoUrl.isBlank()) "Téléverser une photo de profil" else "Changer la photo de profil")
+            }
+
+            if (photoUrl.isNotBlank()) {
+                Text(
+                    text = "Photo sélectionnée",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.primary
+                )
+            }
 
             if (uiState is RegisterUiState.Error) {
                 Text(
