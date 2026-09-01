@@ -1,15 +1,7 @@
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     id("org.jetbrains.kotlin.plugin.compose") 
-}
-
-kotlin {
-    compilerOptions {
-        jvmTarget = JvmTarget.JVM_11
-    }
 }
 dependencies {
     implementation(project(":shared"))
@@ -48,6 +40,9 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
+    }
+    kotlinOptions {
+        jvmTarget = "11"
     }
     buildFeatures {
         compose = true
