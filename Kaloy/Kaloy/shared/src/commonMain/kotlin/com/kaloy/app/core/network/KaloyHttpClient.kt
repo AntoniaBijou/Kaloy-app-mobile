@@ -10,8 +10,7 @@ import io.ktor.serialization.kotlinx.json.*
 import kotlinx.serialization.json.Json
 
 // Émulateur Android  → BASE_URL = "http://10.0.2.2:8087/mozika"
-// Appareil physique sur le même Wi‑Fi → BASE_URL = "http://192.168.1.191:8087/mozika"
-const val BASE_URL = "http://192.168.1.191:8087/mozika"
+const val BASE_URL = "https://latch-tummy-unfrosted.ngrok-free.dev/mozika"
 
 fun createHttpClient(sessionManager: AuthSessionManager): HttpClient = HttpClient {
     expectSuccess = false  // on gère les erreurs HTTP manuellement dans le repository
