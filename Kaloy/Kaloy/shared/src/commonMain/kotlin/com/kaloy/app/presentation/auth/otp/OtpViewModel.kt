@@ -38,7 +38,8 @@ class OtpViewModel(
                 val response = repository.verifyOtp(OtpVerifyRequest(userId = userId, code = code))
                 _uiState.value = OtpUiState.Success(response)
             } catch (e: Exception) {
-                _uiState.value = OtpUiState.Error(UserErrorMessages.fromThrowable(e))
+                val message = UserErrorMessages.fromThrowable(e)
+                _uiState.value = OtpUiState.Error(message)
             }
         }
     }
@@ -50,7 +51,8 @@ class OtpViewModel(
                 repository.resendOtp(ResendOtpRequest(userId = userId))
                 _uiState.value = OtpUiState.Resent
             } catch (e: Exception) {
-                _uiState.value = OtpUiState.Error(UserErrorMessages.fromThrowable(e))
+                val message = UserErrorMessages.fromThrowable(e)
+                _uiState.value = OtpUiState.Error(message)
             }
         }
     }

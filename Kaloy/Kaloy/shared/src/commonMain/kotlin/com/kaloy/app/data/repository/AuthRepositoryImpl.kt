@@ -16,6 +16,15 @@ class AuthRepositoryImpl(
     private val sessionManager: AuthSessionManager
 ) : AuthRepository {
 
+    private suspend fun HttpResponse.readErrorMessage(defaultMessage: String = "Une erreur est survenue. Veuillez réessayer."): String {
+        return try {
+            val rest = body<RestResponse>()
+            rest.message.ifBlank { defaultMessage }
+        } catch (_: Throwable) {
+            defaultMessage
+        }
+    }
+
     private suspend inline fun <reified T> HttpResponse.decodeData(): T {
         val rest = body<RestResponse>()
         if (status.value == 401) {

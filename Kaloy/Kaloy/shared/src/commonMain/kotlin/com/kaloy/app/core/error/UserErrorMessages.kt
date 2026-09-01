@@ -23,7 +23,7 @@ object UserErrorMessages {
                 normalized.contains("déjà exist") -> {
                 when {
                     normalized.contains("phone") || normalized.contains("telephone") || normalized.contains("numéro") ->
-                        "Ce numéro de téléphone est déjà associé à un compte."
+                        "Ce numéro est déjà utilisé. Merci d'en choisir un autre ou de vous connecter.."
                     normalized.contains("email") || normalized.contains("mail") ->
                         "Cet email est déjà associé à un compte."
                     else -> "Cette information est déjà utilisée."

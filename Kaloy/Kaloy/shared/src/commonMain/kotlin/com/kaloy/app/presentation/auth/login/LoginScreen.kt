@@ -76,7 +76,8 @@ class LoginViewModel(
                 sessionManager.saveSession(response)
                 _uiState.value = LoginUiState.Success(response.email)
             } catch (e: Exception) {
-                _uiState.value = LoginUiState.Error(UserErrorMessages.fromThrowable(e))
+                val message = UserErrorMessages.fromThrowable(e)
+                _uiState.value = LoginUiState.Error(message)
             }
         }
     }

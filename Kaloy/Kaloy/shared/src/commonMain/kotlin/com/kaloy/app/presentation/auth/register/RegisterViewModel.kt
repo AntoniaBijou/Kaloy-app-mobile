@@ -57,7 +57,8 @@ class RegisterViewModel(private val repository: AuthRepository) {
                 )
                 _uiState.value = RegisterUiState.Success(response)
             } catch (e: Exception) {
-                _uiState.value = RegisterUiState.Error(UserErrorMessages.fromThrowable(e))
+                val message = UserErrorMessages.fromThrowable(e)
+                _uiState.value = RegisterUiState.Error(message)
             }
         }
     }
@@ -91,7 +92,8 @@ class RegisterViewModel(private val repository: AuthRepository) {
                 )
                 _uiState.value = RegisterUiState.Success(response)
             } catch (e: Exception) {
-                _uiState.value = RegisterUiState.Error(UserErrorMessages.fromThrowable(e))
+                val message = UserErrorMessages.fromThrowable(e)
+                _uiState.value = RegisterUiState.Error(message)
             }
         }
     }
