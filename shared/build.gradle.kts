@@ -44,13 +44,9 @@ kotlin {
         androidMain.dependencies {
             implementation(libs.compose.uiToolingPreview)
             implementation(libs.compose.uiTooling)
-            implementation(libs.ktor.client.okhttp)
+            implementation(libs.androidx.activity.compose)
+            implementation(libs.ktor.client.android)
         }
-        
-        iosMain.dependencies {
-            implementation(libs.ktor.client.darwin)
-        }
-        
         commonMain.dependencies {
             implementation(libs.compose.runtime)
             implementation(libs.compose.foundation)
@@ -60,25 +56,21 @@ kotlin {
             implementation(libs.compose.uiToolingPreview)
             implementation(libs.androidx.lifecycle.viewmodelCompose)
             implementation(libs.androidx.lifecycle.runtimeCompose)
-            
-            // Ktor
+            // Réseau
             implementation(libs.ktor.client.core)
             implementation(libs.ktor.client.content.negotiation)
             implementation(libs.ktor.serialization.kotlinx.json)
             implementation(libs.ktor.client.logging)
-            
-            // Serialization
-            implementation(libs.kotlinx.serialization.json)
-            
+            // DI
+            implementation(libs.koin.core)
+            implementation(libs.koin.compose)
             // Navigation
-            implementation(libs.navigation.compose)
-            
-            // Coroutines
+            implementation(libs.voyager.navigator)
+            implementation(libs.voyager.screenmodel)
+            // Sérialisation & Coroutines
+            implementation(libs.kotlinx.serialization.json)
             implementation(libs.kotlinx.coroutines.core)
-            
-            // Coil image loading
-            implementation(libs.coil.compose)
-            implementation(libs.coil.network.ktor)
+            implementation(libs.multiplatform.settings.no.arg)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
