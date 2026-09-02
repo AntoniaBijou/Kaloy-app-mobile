@@ -6,6 +6,8 @@ plugins {
 dependencies {
     implementation(project(":shared"))
 
+    implementation("io.insert-koin:koin-core:4.0.3")
+    implementation("io.insert-koin:koin-android:4.0.3")
     implementation(libs.androidx.activity.compose)
 
     implementation(libs.compose.uiToolingPreview)
@@ -41,10 +43,13 @@ android {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
-    kotlinOptions {
-        jvmTarget = "11"
-    }
     buildFeatures {
         compose = true
+    }
+}
+
+kotlin {
+    compilerOptions {
+        jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_11)
     }
 }

@@ -67,6 +67,7 @@ kotlin {
             // Navigation
             implementation(libs.voyager.navigator)
             implementation(libs.voyager.screenmodel)
+            implementation(libs.voyager.transitions)
             // Sérialisation & Coroutines
             implementation(libs.kotlinx.serialization.json)
             implementation(libs.kotlinx.coroutines.core)
